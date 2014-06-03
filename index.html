@@ -1,0 +1,160 @@
+<!DOCTYPE html> 
+<html>
+  <head>
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+	<script src="http://stage.cityofwarangal.com/jquery/js/jqBarGraph.1.1.min.js"></script>
+  </head>  
+ <style type="text/css"> 
+    #voteup {	
+    background: green;
+    border-radius: 3px;	
+	}
+	
+	#votedown {
+	margin-left: 575px;
+	background: #C21E56;
+	border-radius: 3px;
+	}
+	#container {	
+	margin: auto;     	
+	width: 40%;
+	} 
+	#navlist li
+	{
+   display: inline;
+   list-style-type: none;
+   padding-right: 20px;   
+   }
+	#pTitle
+	{ 
+	  padding-top:3px;
+	  background-color: burlywood;
+	}
+	#meta
+	{ 
+	 padding-bottom:3px;
+	 background-color: beige;
+	}
+	#imgholder
+	{
+	 padding-top:5px;
+	}
+	.grid
+	{
+	 border-radius: 6px;
+	 border: 1px;
+	 text-align: center;
+	 padding: 3px;
+	 box-shadow: 0 1px 3px rgba(34,25,25,0.4);
+	 background: #fff;
+	 font-size: 16px;
+	 margin-top: 3px;
+	 
+	}
+	#score {
+	background-color: gainsboro;
+	}
+</style> 
+  <body>
+    <div id="reddit-content">
+    </div>
+ 
+    <script>	
+	$(document).ready(function() {	
+    $("#otherCatches").change(function() {		
+	searchClicked($('#otherCatches').val());	
+    });
+    });
+	function searchClicked(rUrl)
+    {
+	var sreddit = rUrl;
+	 var jUrl = "http://www.reddit.com/r/"+ sreddit +".json?jsonp=?";
+      $.getJSON(
+        jUrl,
+        function foo(data)
+        {
+		var html = ['<div>'];
+		var jobject = data.data.children;
+		jobject.sort(function(a, b){
+        return a.data.score-b.data.score})
+		jobject = jobject.reverse();
+          $.each( 
+            jobject,
+            function (i, post) {
+			
+			if( post.data.domain != 'youtu.be')
+		     {
+			    var title = post.data.title;
+				var pUrl = post.data.url; 
+				var pAuthor = post.data.author;
+                var rPermalink = "http://www.reddit.com/" + post.data.permalink;
+				var rScore = post.data.score;
+				var vUps =  post.data.ups;
+				var vDowns = post.data.downs;
+				
+                if( pUrl.indexOf("imgur") >= 0 )				
+			    {				
+				if( pUrl.indexOf(".jpg") >= 0 )
+				{
+				var hcode = '<div id="pTitle">'+ title +'</div><div id= "score" >Reddit Score : '+ rScore +'</div><div id= \"imgholder\"><a target=_blank href = \"' + rPermalink + '\"><img src=\" '+ pUrl + '\" width="400px" /></a></div><div id="centerDiv"><span id="voteup">Ups : '+ vUps	+'</span><span id="votedown">Downs : '+ vDowns +' </span></div><div id="meta">Posted by ' +pAuthor+'</div>';
+                html.push('<div class="grid">', hcode, '</div>');
+				}
+				}            
+            		
+             
+            }
+			else
+			{
+			    var title = post.data.title;
+				var pUrl = post.data.thumbnail; 
+				var pAuthor = post.data.author;
+                var rPermalink = "http://www.reddit.com/" + post.data.url;
+				var rScore = post.data.score;
+				var vUps =  post.data.ups;
+				var vDowns = post.data.downs;
+				if(post.data.thumbnail != 'nsfw')
+				{
+				var hcode = '<div id="pTitle">'+ title +'</div><div id= "score" >Reddit Score : '+ rScore +'</div><div id= \"imgholder\"><a target=_blank href = \"' + rPermalink + '\"><img src=\" '+ pUrl + '\" width="100px" /></a></div><div id="centerDiv"><span id="voteup">Ups : '+ vUps	+'</span><span id="votedown">Downs : '+ vDowns +' </span></div><div id="meta">Posted by ' +pAuthor+'</div>';
+				html.push('<div class="grid">', hcode, '</div>');
+				}
+                
+			
+			}
+			
+			html.push('</div>');			
+            document.getElementById('container').innerHTML = html.join('');	
+			}
+			
+          )
+        }
+      )
+      //.success(function() { alert("second success"); })
+      .error(function() { alert("error"); })
+      //.complete(function() { alert("complete"); });
+	  }
+    </script>
+	<!-- Header -->
+<header id="header">
+	<h1>Json API</h1>
+</header>
+
+<!-- Content -->
+<section id="wrapper">
+	<hgroup>
+		<h2>  </h2> 		
+	</hgroup>
+  <select name="otherCatches" id="otherCatches">
+  <option value="">Select A SubReddit</option>
+  <option value="aww">Aww</option>
+  <option value="pics">Pics</option>
+  <option value="AdviceAnimals">AdviceAnimals</option>
+  <option value="AbandonedPorn">Abandoned</option>  
+</select>
+<div id="container">            	
+</div> <!---->
+</div>
+</section>
+
+ 
+  </body>
+</html>
